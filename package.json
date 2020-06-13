@@ -1,0 +1,26 @@
+{
+  "name": "tagar",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "serve": "vue-cli-service serve --port 4200",
+    "build": "vue-cli-service build"
+  },
+  "dependencies": {
+    "@types/sockjs-client": "^1.1.1",
+    "sockjs-client": "^1.4.0",
+    "vue": "^2.6.11",
+    "vue-class-component": "^7.2.3",
+    "vue-property-decorator": "^8.4.2",
+    "webstomp-client": "^1.2.6"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-typescript": "~4.4.0",
+    "@vue/cli-service": "~4.4.0",
+    "bulma": "^0.9.0",
+    "sass": "^1.26.5",
+    "sass-loader": "^8.0.2",
+    "typescript": "~3.9.3",
+    "vue-template-compiler": "^2.6.11"
+  }
+}
