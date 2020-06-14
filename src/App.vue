@@ -15,7 +15,7 @@
       </button>
 
       <button
-        @click="send"
+        @click="newRoom"
         :class="['button mt-4 is-primary', { 'is-loading': isLoading }]"
       >
         teste
@@ -32,6 +32,7 @@ import Stomp, { Client, Frame } from "webstomp-client";
 export default class App extends Vue {
   isLoading = false;
   stompClient: Client | undefined;
+  user: string | undefined;
 
   newRoom() {
     if (this.stompClient && this.stompClient.connected) {
@@ -46,8 +47,7 @@ export default class App extends Vue {
         JSON.stringify({
           from: "Allef",
           message: "olá mundo",
-        }),
-        { id: "allef" }
+        })
       );
     }
   }
@@ -58,7 +58,9 @@ export default class App extends Vue {
       {},
       (frame) => {
         console.log(frame);
-        this.isLoading = false
+        this.user = frame?.headers['user-name'];
+        this.isLoading = false;
+        this.stompClient?.subscribe(`/user/${this.user}/`, message => console.log(message));
       },
       (error) => console.log(error)
     );
