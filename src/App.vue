@@ -1,45 +1,18 @@
 <template>
   <div id="app">
-    <div class="centered-content">
-      <div class="has-text-centered">
-        <h1 class="title is-1 has-text-primary my-0">tagar</h1>
-        <p class="has-text-white">
-          <span class="has-text-primary">small talks</span> with persons
-        </p>
-      </div>
-      <button
-        @click="newChat"
-        :class="['button mt-4 is-primary', { 'is-loading': isLoading }]"
-      >
-        Conversar
-      </button>
-
-      <button
-        @click="newRoom"
-        :class="['button mt-4 is-primary', { 'is-loading': isLoading }]"
-      >
-        teste
-      </button>
-    </div>
-    <!-- <div class="centered-content">
-      <div class="container-chat">
-        <div class="main-messages">
-          <div class="msg my-msg">
-            <p>Olá</p>
-          </div>
-          <div class="msg stranger-msg">
-            <p>Olá estranho</p>
-          </div>
-        </div>
-        <div class="main-bar">
-          <button class="button is-black has-text-white">Exit</button>
-          <div class="main-input">
-            <input type="text" placeholder="Type here..." />
-          </div>
-          <button class="button is-primary has-text-white">Send</button>
-        </div>
-      </div>
-    </div> -->
+    <HomePage
+      @new="newRoom"
+      :isLoading="waitingRoom"
+      v-if="rooms.length === 0"
+    />
+    <ChatPage
+      v-else
+      :rooms="rooms"
+      :user="user"
+      @send:message="sendChatMessage"
+      @exit="exitRoom"
+      @new="newRoom"
+    />
   </div>
 </template>
 
@@ -47,41 +20,66 @@
 import { Component, Vue } from "vue-property-decorator";
 import Stomp, { Client, Frame } from "webstomp-client";
 
-@Component({})
+import { IRoom } from "./shared/interfaces";
+
+import HomePage from "./views/HomePage.vue";
+import ChatPage from "./views/ChatPage.vue";
+
+@Component({
+  components: {
+    HomePage,
+    ChatPage,
+  },
+})
 export default class App extends Vue {
-  isLoading = false;
+  waitingRoom = false;
+  rooms: Array<IRoom> = [];
   stompClient: Client | undefined;
   user: string | undefined;
 
   newRoom() {
     if (this.stompClient && this.stompClient.connected) {
       this.stompClient.send("/app/secured/new");
+      this.waitingRoom = true;
     }
   }
 
-  send() {
+  exitRoom(room: IRoom) {
+    this.stompClient?.unsubscribe(`/chat/${room.id}/`);
+  }
+
+  sendChatMessage(room: IRoom, message: string) {
+    console.log(room, message);
     if (this.stompClient && this.stompClient.connected) {
-      this.stompClient.send(
-        "/app/secured/room",
-        JSON.stringify({
-          from: "Allef",
-          message: "olá mundo",
-        })
-      );
+      this.stompClient.send(`/app/chat/${room.id}`, message);
     }
   }
 
-  newChat() {
-    this.isLoading = true;
+  userSubscribe() {
+    this.stompClient?.subscribe(`/user/${this.user}/`, (chatID) => {
+      const room: IRoom = { id: chatID.body, messages: [] };
+      this.roomSubscribe(room);
+      this.rooms.push(room);
+      this.waitingRoom = false;
+    });
+  }
+
+  roomSubscribe(room: IRoom) {
+    this.stompClient?.subscribe(`/chat/${room.id}`, (message) => {
+      const receivedMessage = JSON.parse(message.body);
+      const body = receivedMessage.message;
+      const user = receivedMessage.from;
+      room.messages.push({ body, user });
+    });
+  }
+
+  connect() {
     this.stompClient?.connect(
       {},
       (frame) => {
         console.log(frame);
         this.user = frame?.headers["user-name"];
-        this.isLoading = false;
-        this.stompClient?.subscribe(`/user/${this.user}/`, (message) =>
-          console.log(message)
-        );
+        this.userSubscribe();
       },
       (error) => console.log(error)
     );
@@ -90,88 +88,16 @@ export default class App extends Vue {
   created() {
     this.stompClient = Stomp.client("ws://localhost:8080/websocket");
     this.stompClient.debug = () => {};
+    this.connect();
   }
 }
 </script>
 
 <style lang="scss">
-@import "./style.scss";
-
-* {
-  box-sizing: border-box;
-}
-
-.centered-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  height: 100vh;
-  flex-direction: column;
-}
-
-.button {
-  font-weight: bold;
-  font-size: 20px;
-}
-
-.container-chat {
-  height: 90vh;
-  width: 75vw;
-  max-width: 840px;
-  background: $title-color;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border-radius: 3px;
-}
-
-.main-bar {
-  display: flex;
+#app {
+  font-family: Roboto, sans-serif;
+  background-color: #2f2e2c;
+  min-height: 100vh;
   width: 100%;
-  justify-content: space-between;
-  align-items: stretch;
-}
-
-.main-input {
-  flex-grow: 1;
-
-  input {
-    background: rgba(255, 255, 255, 0.5);
-    width: 100%;
-    height: 100%;
-    padding: 0 20px;
-    border: 0;
-    outline: 0;
-  }
-}
-
-.main-messages {
-  .msg {
-    margin-bottom: 6px;
-    width: 100%;
-
-    p {
-      padding: 0 20px;
-      display: inline-flex;
-      height: 35px;
-      align-items: center;
-      border-radius: 15px;
-    }
-
-    &.my-msg {
-      text-align: right;
-      p {
-        background: #ffeaa7;
-      }
-    }
-
-    &.stranger-msg {
-      p {
-        background: #dfe6e9;
-      }
-    }
-  }
 }
 </style>
