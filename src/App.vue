@@ -21,6 +21,25 @@
         teste
       </button>
     </div>
+    <!-- <div class="centered-content">
+      <div class="container-chat">
+        <div class="main-messages">
+          <div class="msg my-msg">
+            <p>Olá</p>
+          </div>
+          <div class="msg stranger-msg">
+            <p>Olá estranho</p>
+          </div>
+        </div>
+        <div class="main-bar">
+          <button class="button is-black has-text-white">Exit</button>
+          <div class="main-input">
+            <input type="text" placeholder="Type here..." />
+          </div>
+          <button class="button is-primary has-text-white">Send</button>
+        </div>
+      </div>
+    </div> -->
   </div>
 </template>
 
@@ -58,9 +77,11 @@ export default class App extends Vue {
       {},
       (frame) => {
         console.log(frame);
-        this.user = frame?.headers['user-name'];
+        this.user = frame?.headers["user-name"];
         this.isLoading = false;
-        this.stompClient?.subscribe(`/user/${this.user}/`, message => console.log(message));
+        this.stompClient?.subscribe(`/user/${this.user}/`, (message) =>
+          console.log(message)
+        );
       },
       (error) => console.log(error)
     );
@@ -76,6 +97,10 @@ export default class App extends Vue {
 <style lang="scss">
 @import "./style.scss";
 
+* {
+  box-sizing: border-box;
+}
+
 .centered-content {
   display: flex;
   align-items: center;
@@ -88,5 +113,65 @@ export default class App extends Vue {
 .button {
   font-weight: bold;
   font-size: 20px;
+}
+
+.container-chat {
+  height: 90vh;
+  width: 75vw;
+  max-width: 840px;
+  background: $title-color;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 3px;
+}
+
+.main-bar {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: stretch;
+}
+
+.main-input {
+  flex-grow: 1;
+
+  input {
+    background: rgba(255, 255, 255, 0.5);
+    width: 100%;
+    height: 100%;
+    padding: 0 20px;
+    border: 0;
+    outline: 0;
+  }
+}
+
+.main-messages {
+  .msg {
+    margin-bottom: 6px;
+    width: 100%;
+
+    p {
+      padding: 0 20px;
+      display: inline-flex;
+      height: 35px;
+      align-items: center;
+      border-radius: 15px;
+    }
+
+    &.my-msg {
+      text-align: right;
+      p {
+        background: #ffeaa7;
+      }
+    }
+
+    &.stranger-msg {
+      p {
+        background: #dfe6e9;
+      }
+    }
+  }
 }
 </style>
