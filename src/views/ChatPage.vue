@@ -12,7 +12,7 @@
         </div>
       </div>
       <form @submit.prevent="sendMessage" class="main-bar">
-        <button type="button" class="button is-black has-text-white">
+        <button type="button" class="button is-black has-text-white" @click="exit">
           Exit
         </button>
         <div class="main-input">
@@ -40,6 +40,10 @@ export default class ChatPage extends Vue {
   sendMessage() {
     this.$emit("send:message", this.room, this.text);
     this.text = "";
+  }
+
+  exit(){
+    this.$emit("exit", this.room);
   }
 
   get room() {

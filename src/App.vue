@@ -45,6 +45,7 @@ export default class App extends Vue {
   }
 
   exitRoom(room: IRoom) {
+    console.log(room);
     this.stompClient?.unsubscribe(`/chat/${room.id}/`);
   }
 
