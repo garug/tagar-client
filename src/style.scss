@@ -3,6 +3,8 @@
 $primary: #D29F1B;
 $link: $primary;
 $title-color: #fafafa;
+$default-spacing: 20px;
+$mobile-spacing: 5px;
 
 @import "../node_modules/bulma/bulma.sass";
 
@@ -12,7 +14,13 @@ $title-color: #fafafa;
 
 .button {
   font-weight: bold;
-  font-size: 20px;
+  font-size: 16px;
+}
+
+@media (min-width: $tablet) {
+  .button {
+    font-size: 20px;
+  }
 }
 
 .centered-content {

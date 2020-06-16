@@ -18,7 +18,7 @@
         <div class="main-input">
           <input type="text" v-model="text" placeholder="Type here..." />
         </div>
-        <button type="submit" class="button is-primary has-text-white">
+        <button type="submit" class="button is-primary has-text-white is-hidden-mobile">
           Send
         </button>
       </form>
@@ -58,7 +58,6 @@ export default class ChatPage extends Vue {
   width: 75vw;
   max-width: 840px;
   background: $title-color;
-  padding: 20px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -70,6 +69,15 @@ export default class ChatPage extends Vue {
   width: 100%;
   justify-content: space-between;
   align-items: stretch;
+  padding: 0 $mobile-spacing;
+  margin-bottom: $mobile-spacing;
+}
+
+@media (min-width: $tablet) {
+  .main-bar {
+    padding: 0 $default-spacing;
+    margin-bottom: $default-spacing;
+  }
 }
 
 .main-input {
@@ -79,35 +87,64 @@ export default class ChatPage extends Vue {
     background: rgba(255, 255, 255, 0.5);
     width: 100%;
     height: 100%;
-    padding: 0 20px;
+    padding: 0 $mobile-spacing;
     border: 0;
     outline: 0;
   }
 }
 
+@media (min-width: $tablet) {
+  .main-input {
+    input {
+      padding: 0 $default-spacing;
+    }
+  }
+}
+
 .main-messages {
+  overflow-y: auto;
+  margin: 10px;
+  margin-top: 0;
+  margin-right: 0;
+  padding-right: 10px;
   .msg {
     margin-bottom: 6px;
     width: 100%;
+    overflow-x: auto;
 
     p {
-      padding: 0 20px;
+      padding: 5px 10px;
       display: inline-flex;
-      height: 35px;
+      min-height: 35px;
       align-items: center;
       border-radius: 15px;
     }
 
     &.my-msg {
       text-align: right;
+      
       p {
         background: #ffeaa7;
+        text-align: left;
       }
     }
 
     &.stranger-msg {
       p {
         background: #dfe6e9;
+      }
+    }
+  }
+}
+
+@media (min-width: $tablet) {
+  .main-messages {
+    margin: $default-spacing;
+    margin-top: 10px;
+    padding-right: $default-spacing;
+    .msg {
+      p {
+        padding: 5px $default-spacing;
       }
     }
   }
