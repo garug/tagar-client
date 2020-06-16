@@ -1,6 +1,7 @@
 interface IRoom {
   id: string;
   messages: Array<IMessage>;
+  active?: boolean;
 }
 
 interface IMessage {

@@ -12,13 +12,43 @@
         </div>
       </div>
       <form @submit.prevent="sendMessage" class="main-bar">
-        <button type="button" class="button is-black has-text-white" @click="exit">
+        <button
+          type="button"
+          v-if="!isExiting && !isDisconnected"
+          class="button is-black has-text-white"
+          @click="handleExit"
+        >
           Exit
         </button>
+        <button
+          type="button"
+          v-if="isExiting && !isDisconnected"
+          class="button is-danger has-text-white"
+          @click="exit"
+        >
+          Confirm?
+        </button>
+        <button
+          type="button"
+          v-if="!isExiting && isDisconnected"
+          :class="['button is-primary has-text-white', { 'is-loading': isLoading }]"
+          @click="$emit('new')"
+        >
+          New Conversation
+        </button>
         <div class="main-input">
-          <input type="text" v-model="text" placeholder="Type here..." />
+          <input
+            type="text"
+            :disabled="isDisconnected"
+            v-model="text"
+            placeholder="Type here..."
+          />
         </div>
-        <button type="submit" class="button is-primary has-text-white is-hidden-mobile">
+        <button
+          type="submit"
+          :disabled="isDisconnected"
+          class="button is-primary has-text-white is-hidden-mobile"
+        >
           Send
         </button>
       </form>
@@ -27,7 +57,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from "vue-property-decorator";
+import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 
 import { IRoom, IMessage } from "../shared/interfaces";
 
@@ -35,19 +65,36 @@ import { IRoom, IMessage } from "../shared/interfaces";
 export default class ChatPage extends Vue {
   @Prop() user!: string;
   @Prop() rooms!: Array<IRoom>;
+  @Prop() isLoading = false;
   text = "";
+  isExiting = false;
+  isDisconnected = false;
 
   sendMessage() {
     this.$emit("send:message", this.room, this.text);
     this.text = "";
   }
 
-  exit(){
+  handleExit() {
+    this.isExiting = true;
+  }
+
+  exit() {
     this.$emit("exit", this.room);
+    this.isExiting = false;
+    this.isDisconnected = true;
   }
 
   get room() {
-      return this.rooms[0];
+    return this.rooms[0];
+  }
+
+  @Watch('room')
+  onRoomChange(newRoom: IRoom, oldRoom: IRoom) {
+    if (newRoom.id !== oldRoom.id) {
+      this.isExiting = false;
+      this.isDisconnected = false;
+    }
   }
 }
 </script>
@@ -122,7 +169,7 @@ export default class ChatPage extends Vue {
 
     &.my-msg {
       text-align: right;
-      
+
       p {
         background: #ffeaa7;
         text-align: left;

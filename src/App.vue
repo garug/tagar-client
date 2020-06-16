@@ -9,6 +9,7 @@
       v-else
       :rooms="rooms"
       :user="user"
+      :isLoading="waitingRoom"
       @send:message="sendChatMessage"
       @exit="exitRoom"
       @new="newRoom"
@@ -28,8 +29,8 @@ import ChatPage from "./views/ChatPage.vue";
 @Component({
   components: {
     HomePage,
-    ChatPage,
-  },
+    ChatPage
+  }
 })
 export default class App extends Vue {
   waitingRoom = false;
@@ -45,8 +46,13 @@ export default class App extends Vue {
   }
 
   exitRoom(room: IRoom) {
-    console.log(room);
-    this.stompClient?.unsubscribe(`/chat/${room.id}/`);
+    const actualRoom = this.rooms.find(searchRoom => searchRoom.id === room.id);
+    if (actualRoom) {
+      this.stompClient?.unsubscribe(`/chat/${room.id}`);
+      actualRoom.active = false;
+    } else {
+      throw new Error("Trying to exit of invalid room");
+    }
   }
 
   sendChatMessage(room: IRoom, message: string) {
@@ -57,16 +63,16 @@ export default class App extends Vue {
   }
 
   userSubscribe() {
-    this.stompClient?.subscribe(`/user/${this.user}/`, (chatID) => {
+    this.stompClient?.subscribe(`/user/${this.user}/`, chatID => {
       const room: IRoom = { id: chatID.body, messages: [] };
       this.roomSubscribe(room);
-      this.rooms.push(room);
+      this.pushRoom(room);
       this.waitingRoom = false;
     });
   }
 
   roomSubscribe(room: IRoom) {
-    this.stompClient?.subscribe(`/chat/${room.id}`, (message) => {
+    this.stompClient?.subscribe(`/chat/${room.id}`, message => {
       const receivedMessage = JSON.parse(message.body);
       const body = receivedMessage.message;
       const user = receivedMessage.from;
@@ -74,15 +80,26 @@ export default class App extends Vue {
     });
   }
 
+  pushRoom(room: IRoom) {
+    const indexInactivatedRoom = this.rooms.findIndex(
+      actualRoom => !actualRoom.active
+    );
+    if (indexInactivatedRoom === -1) {
+      this.rooms.push(room);
+    } else {
+      this.rooms.splice(indexInactivatedRoom, 1, room);
+    }
+  }
+
   connect() {
     this.stompClient?.connect(
       {},
-      (frame) => {
+      frame => {
         console.log(frame);
         this.user = frame?.headers["user-name"];
         this.userSubscribe();
       },
-      (error) => console.log(error)
+      error => console.log(error)
     );
   }
 
