@@ -1,7 +1,9 @@
+import { Subscription } from 'webstomp-client';
+
 interface IRoom {
   id: string;
   messages: Array<IMessage>;
-  active?: boolean;
+  subscription?: Subscription;
 }
 
 interface IMessage {

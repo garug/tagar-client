@@ -72,6 +72,7 @@ export default class ChatPage extends Vue {
 
   sendMessage() {
     this.$emit("send:message", this.room, this.text);
+    this.isExiting = false;
     this.text = "";
   }
 

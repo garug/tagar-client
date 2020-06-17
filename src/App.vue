@@ -48,8 +48,8 @@ export default class App extends Vue {
   exitRoom(room: IRoom) {
     const actualRoom = this.rooms.find(searchRoom => searchRoom.id === room.id);
     if (actualRoom) {
-      this.stompClient?.unsubscribe(`/chat/${room.id}`);
-      actualRoom.active = false;
+      actualRoom.subscription?.unsubscribe();
+      actualRoom.subscription = undefined;
     } else {
       throw new Error("Trying to exit of invalid room");
     }
@@ -72,7 +72,7 @@ export default class App extends Vue {
   }
 
   roomSubscribe(room: IRoom) {
-    this.stompClient?.subscribe(`/chat/${room.id}`, message => {
+    room.subscription = this.stompClient?.subscribe(`/chat/${room.id}`, message => {
       const receivedMessage = JSON.parse(message.body);
       const body = receivedMessage.message;
       const user = receivedMessage.from;
@@ -82,7 +82,7 @@ export default class App extends Vue {
 
   pushRoom(room: IRoom) {
     const indexInactivatedRoom = this.rooms.findIndex(
-      actualRoom => !actualRoom.active
+      actualRoom => !actualRoom.subscription
     );
     if (indexInactivatedRoom === -1) {
       this.rooms.push(room);
