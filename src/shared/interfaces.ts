@@ -1,9 +1,7 @@
-import { Subscription } from 'webstomp-client';
-
 interface IRoom {
   id: string;
   messages: Array<IMessage>;
-  subscription?: Subscription;
+  active?: boolean;
 }
 
 interface IMessage {
@@ -11,4 +9,12 @@ interface IMessage {
   user: string;
 }
 
-export { IRoom, IMessage };
+interface IChatStore {
+  rooms: Array<IRoom>;
+  waitingRoom: boolean;
+  newRoom(): void;
+  exitRoom(room: IRoom): void;
+  sendChatMessage(room: IRoom, message: string): void;
+}
+
+export { IRoom, IMessage, IChatStore };

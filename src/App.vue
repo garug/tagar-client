@@ -8,7 +8,6 @@
     <ChatPage
       v-else
       :rooms="rooms"
-      :user="user"
       :isLoading="waitingRoom"
       @send:message="sendChatMessage"
       @exit="exitRoom"
@@ -19,12 +18,13 @@
 
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
-import Stomp, { Client, Frame } from "webstomp-client";
 
-import { IRoom } from "./shared/interfaces";
+import { IRoom, IChatStore } from "./shared/interfaces";
+import NodeChatStore from './shared/NodeChatStore';
 
 import HomePage from "./views/HomePage.vue";
 import ChatPage from "./views/ChatPage.vue";
+import { Socket } from 'vue-socket.io-extended';
 
 @Component({
   components: {
@@ -33,80 +33,26 @@ import ChatPage from "./views/ChatPage.vue";
   }
 })
 export default class App extends Vue {
-  waitingRoom = false;
-  rooms: Array<IRoom> = [];
-  stompClient: Client | undefined;
-  user: string | undefined;
+  socket: IChatStore = new NodeChatStore(this.$socket.client);
 
   newRoom() {
-    if (this.stompClient && this.stompClient.connected) {
-      this.stompClient.send("/app/secured/new");
-      this.waitingRoom = true;
-    }
+    this.socket.newRoom();
   }
 
   exitRoom(room: IRoom) {
-    const actualRoom = this.rooms.find(searchRoom => searchRoom.id === room.id);
-    if (actualRoom) {
-      actualRoom.subscription?.unsubscribe();
-      actualRoom.subscription = undefined;
-    } else {
-      throw new Error("Trying to exit of invalid room");
-    }
+    this.socket.exitRoom(room);
   }
 
   sendChatMessage(room: IRoom, message: string) {
-    console.log(room, message);
-    if (this.stompClient && this.stompClient.connected) {
-      this.stompClient.send(`/app/chat/${room.id}`, message);
-    }
+    this.socket.sendChatMessage(room, message);
   }
 
-  userSubscribe() {
-    this.stompClient?.subscribe(`/user/${this.user}/`, chatID => {
-      const room: IRoom = { id: chatID.body, messages: [] };
-      this.roomSubscribe(room);
-      this.pushRoom(room);
-      this.waitingRoom = false;
-    });
+  get waitingRoom() {
+    return this.socket.waitingRoom;
   }
 
-  roomSubscribe(room: IRoom) {
-    room.subscription = this.stompClient?.subscribe(`/chat/${room.id}`, message => {
-      const receivedMessage = JSON.parse(message.body);
-      const body = receivedMessage.message;
-      const user = receivedMessage.from;
-      room.messages.push({ body, user });
-    });
-  }
-
-  pushRoom(room: IRoom) {
-    const indexInactivatedRoom = this.rooms.findIndex(
-      actualRoom => !actualRoom.subscription
-    );
-    if (indexInactivatedRoom === -1) {
-      this.rooms.push(room);
-    } else {
-      this.rooms.splice(indexInactivatedRoom, 1, room);
-    }
-  }
-
-  connect() {
-    this.stompClient?.connect(
-      {},
-      frame => {
-        console.log(frame);
-        this.user = frame?.headers["user-name"];
-        this.userSubscribe();
-      },
-      error => console.log(error)
-    );
-  }
-
-  created() {
-    this.stompClient = Stomp.client("ws://localhost:8080/websocket");
-    this.stompClient.debug = () => {};
-    this.connect();
+  get rooms() {
+    return this.socket.rooms;
   }
 }
 </script>

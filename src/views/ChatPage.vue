@@ -6,7 +6,7 @@
           v-for="(msg, index) in room.messages"
           :id="`${msg.user}-${index}`"
           :key="`msg-${msg.user}-${index}`"
-          :class="['msg', msg.user === user ? 'my-msg' : 'stranger-msg']"
+          :class="['msg', msg.user === 'me' ? 'my-msg' : 'stranger-msg']"
         >
           <p>{{ msg.body }}</p>
         </div>
@@ -63,7 +63,6 @@ import { IRoom, IMessage } from "../shared/interfaces";
 
 @Component({})
 export default class ChatPage extends Vue {
-  @Prop() user!: string;
   @Prop() rooms!: Array<IRoom>;
   @Prop() isLoading = false;
   text = "";
