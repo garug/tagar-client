@@ -12,6 +12,10 @@ $mobile-spacing: 5px;
   box-sizing: border-box;
 }
 
+html {
+  height: 100%;
+}
+
 .button {
   font-weight: bold;
   font-size: 16px;
