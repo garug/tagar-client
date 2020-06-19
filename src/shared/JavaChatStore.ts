@@ -9,7 +9,7 @@ export default class JavaChat implements IChatStore {
   rooms: Array<IJavaRoom> = [];
   waitingRoom = false;
   stompClient: Client;
-  user: string | undefined;
+  user: string = "";
 
   constructor() {
     this.stompClient = Stomp.client("ws://localhost:8080/websocket");
@@ -18,7 +18,7 @@ export default class JavaChat implements IChatStore {
       {},
       (frame) => {
         console.log(frame);
-        this.user = frame?.headers["user-name"];
+        this.user = frame?.headers["user-name"] || this.user;
         this.userSubscribe();
       },
       (error) => console.log(error)
