@@ -1,7 +1,7 @@
 interface IRoom {
   id: string;
   messages: Array<IMessage>;
-  active?: boolean;
+  active: boolean;
 }
 
 interface IMessage {
@@ -12,6 +12,7 @@ interface IMessage {
 interface IChatStore {
   rooms: Array<IRoom>;
   waitingRoom: boolean;
+  user: string;
   newRoom(): void;
   exitRoom(room: IRoom): void;
   sendChatMessage(room: IRoom, message: string): void;

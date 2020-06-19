@@ -2,7 +2,7 @@ import { IChatStore, IRoom } from "./interfaces";
 import Stomp, { Client, Message, Frame, Subscription } from "webstomp-client";
 
 interface IJavaRoom extends IRoom {
-  subscription? : Subscription;
+  subscription?: Subscription;
 }
 
 export default class JavaChat implements IChatStore {
@@ -16,12 +16,12 @@ export default class JavaChat implements IChatStore {
     this.stompClient.debug = () => {};
     this.stompClient.connect(
       {},
-      frame => {
+      (frame) => {
         console.log(frame);
         this.user = frame?.headers["user-name"];
         this.userSubscribe();
       },
-      error => console.log(error)
+      (error) => console.log(error)
     );
   }
 
@@ -51,8 +51,8 @@ export default class JavaChat implements IChatStore {
   }
 
   private userSubscribe(): void {
-    this.stompClient?.subscribe(`/user/${this.user}/`, chatID => {
-      const room: IRoom = { id: chatID.body, messages: [] };
+    this.stompClient?.subscribe(`/user/${this.user}/`, (chatID) => {
+      const room: IRoom = { id: chatID.body, messages: [], active: true };
       this.roomSubscribe(room);
       this.pushRoom(room);
       this.waitingRoom = false;
@@ -60,17 +60,20 @@ export default class JavaChat implements IChatStore {
   }
 
   private roomSubscribe(room: IJavaRoom): void {
-    room.subscription = this.stompClient?.subscribe(`/chat/${room.id}`, message => {
-      const receivedMessage = JSON.parse(message.body);
-      const body = receivedMessage.message;
-      const user = receivedMessage.from;
-      room.messages.push({ body, user });
-    });
+    room.subscription = this.stompClient?.subscribe(
+      `/chat/${room.id}`,
+      (message) => {
+        const receivedMessage = JSON.parse(message.body);
+        const body = receivedMessage.message;
+        const user = receivedMessage.from;
+        room.messages.push({ body, user });
+      }
+    );
   }
 
   private pushRoom(room: IRoom) {
     const indexInactivatedRoom = this.rooms.findIndex(
-      actualRoom => !actualRoom.subscription
+      (actualRoom) => !actualRoom.subscription
     );
     if (indexInactivatedRoom === -1) {
       this.rooms.push(room);

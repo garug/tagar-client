@@ -6,7 +6,7 @@
           v-for="(msg, index) in room.messages"
           :id="`${msg.user}-${index}`"
           :key="`msg-${msg.user}-${index}`"
-          :class="['msg', msg.user === 'me' ? 'my-msg' : 'stranger-msg']"
+          :class="['msg', classUser(msg)]"
         >
           <p>{{ msg.body }}</p>
         </div>
@@ -67,7 +67,6 @@ export default class ChatPage extends Vue {
   @Prop() isLoading = false;
   text = "";
   isExiting = false;
-  isDisconnected = false;
 
   sendMessage() {
     this.$emit("send:message", this.room, this.text);
@@ -82,18 +81,31 @@ export default class ChatPage extends Vue {
   exit() {
     this.$emit("exit", this.room);
     this.isExiting = false;
-    this.isDisconnected = true;
   }
 
   get room() {
     return this.rooms[0];
   }
 
-  @Watch('room')
+  get isDisconnected() {
+    return !this.room.active;
+  }
+
+  classUser(msg: IMessage): string {
+    switch (msg.user) {
+      case "me":
+        return "my-msg";
+      case "system":
+        return "system-msg";
+      default:
+        return "stranger-msg";
+    }
+  }
+
+  @Watch("room")
   onRoomChange(newRoom: IRoom, oldRoom: IRoom) {
     if (newRoom.id !== oldRoom.id) {
       this.isExiting = false;
-      this.isDisconnected = false;
     }
   }
 }
@@ -174,6 +186,11 @@ export default class ChatPage extends Vue {
         background: #ffeaa7;
         text-align: left;
       }
+    }
+
+    &.system-msg {
+      text-align: center;
+      font-weight: bold;
     }
 
     &.stranger-msg {
