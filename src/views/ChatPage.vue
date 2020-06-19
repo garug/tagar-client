@@ -113,14 +113,22 @@ export default class ChatPage extends Vue {
 
 <style lang="scss" scoped>
 .container-chat {
-  height: 90vh;
-  width: 75vw;
+  min-height: 98vh;
+  width: 96vw;
   max-width: 840px;
   background: $title-color;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   border-radius: 3px;
+}
+
+@media (min-width: $tablet) {
+  .container-chat {
+    height: 90vh;
+    min-height: 90vh;
+    width: 75vw;
+  }
 }
 
 .main-bar {
@@ -167,7 +175,8 @@ export default class ChatPage extends Vue {
   margin-right: 0;
   padding-right: 10px;
   .msg {
-    margin-bottom: 6px;
+    margin-bottom: 3px;
+    margin-top: 3px;
     width: 100%;
     overflow-x: auto;
 
