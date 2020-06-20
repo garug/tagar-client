@@ -50,6 +50,10 @@ export default class JavaChat implements IChatStore {
     }
   }
 
+  sendChatTyping(room: IRoom):void {
+    console.log("submit typing ...")
+  }
+
   private userSubscribe(): void {
     this.stompClient?.subscribe(`/user/${this.user}/`, (chatID) => {
       const room: IRoom = { id: chatID.body, messages: [], active: true };

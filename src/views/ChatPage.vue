@@ -11,6 +11,9 @@
           <p>{{ msg.body }}</p>
         </div>
       </div>
+      <div class="main-typing" v-if="room.userTyping">
+          <i>{{room.userTyping}} is typing ...</i>
+      </div>
       <form @submit.prevent="sendMessage" class="main-bar">
         <button
           type="button"
@@ -42,6 +45,7 @@
             :disabled="isDisconnected"
             v-model="text"
             placeholder="Type here..."
+            @keypress="sendStatusTyping"
           />
         </div>
         <button
@@ -72,6 +76,10 @@ export default class ChatPage extends Vue {
     this.$emit("send:message", this.room, this.text);
     this.isExiting = false;
     this.text = "";
+  }
+
+  sendStatusTyping(){
+    this.$emit("send:typing", this.room);
   }
 
   handleExit() {
@@ -106,6 +114,14 @@ export default class ChatPage extends Vue {
   onRoomChange(newRoom: IRoom, oldRoom: IRoom) {
     if (newRoom.id !== oldRoom.id) {
       this.isExiting = false;
+    }
+  }
+
+  @Watch("room.userTyping")
+  onUserTyping(newState: string, oldState: string ) {
+    if(newState != oldState){
+      this.room.userTyping = newState;
+      setTimeout(()=> {this.room.userTyping = ""}, 2000);
     }
   }
 }
@@ -221,5 +237,12 @@ export default class ChatPage extends Vue {
       }
     }
   }
+}
+
+.main-typing {
+  width: 100%;
+  text-align: center;
+  color: gray;
+  font-size: 10px;
 }
 </style>
