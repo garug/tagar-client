@@ -12,6 +12,7 @@
       @send:message="sendChatMessage"
       @exit="exitRoom"
       @new="newRoom"
+      @send:typing="sendChatTyping"
     />
   </div>
 </template>
@@ -45,6 +46,10 @@ export default class App extends Vue {
 
   sendChatMessage(room: IRoom, message: string) {
     this.socket.sendChatMessage(room, message);
+  }
+
+  sendChatTyping(room:IRoom){
+    this.socket.sendChatTyping(room);
   }
 
   get waitingRoom() {

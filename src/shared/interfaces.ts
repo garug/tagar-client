@@ -1,6 +1,7 @@
 interface IRoom {
   id: string;
   messages: Array<IMessage>;
+  userTyping?: string;
   active: boolean;
 }
 
@@ -16,6 +17,7 @@ interface IChatStore {
   newRoom(): void;
   exitRoom(room: IRoom): void;
   sendChatMessage(room: IRoom, message: string): void;
+  sendChatTyping(room:IRoom): void;
 }
 
 export { IRoom, IMessage, IChatStore };

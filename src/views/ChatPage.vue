@@ -48,6 +48,7 @@
             :disabled="isDisconnected"
             v-model="text"
             placeholder="Type here..."
+            @keypress="sendStatusTyping"
           />
         </div>
         <button

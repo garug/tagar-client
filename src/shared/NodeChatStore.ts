@@ -6,10 +6,16 @@ interface IIncomingMessage {
   message: string;
   user: string;
 }
+
 interface IDisconnect {
   chatId: string;
   user: string;
   timestamp: Date;
+}
+
+interface ITyping {
+  chatId: string;
+  user: string;
 }
 
 export default class NodeChatStore implements IChatStore {
@@ -21,7 +27,7 @@ export default class NodeChatStore implements IChatStore {
   constructor(private client: typeof ClientSocket) {
     const store = this;
     this.client.on("room-subscribed", (roomId: string) => {
-      const room: IRoom = { id: roomId, messages: [], active: true };
+      const room: IRoom = { id: roomId, messages: [], active: true, userTyping:"" };
       this.pushRoom(room);
       this.waitingRoom = false;
     });
@@ -41,6 +47,11 @@ export default class NodeChatStore implements IChatStore {
     });
 
     this.client.on("user-info", (user: string) => (this.user = user));
+    
+    this.client.on("chat-typing", ({ chatId, user }: ITyping) => {
+      const room = store.rooms.find((r) => r.id === chatId);
+      if(room) room.userTyping = user;
+    });
   }
 
   newRoom(): void {
@@ -57,6 +68,10 @@ export default class NodeChatStore implements IChatStore {
     const outMessage = { chatId: room.id, message };
     room.messages.push({ body: message, user: "me" });
     this.client.emit("chat-message", outMessage);
+  }
+
+  sendChatTyping(room:IRoom): void {
+    this.client.emit("chat-typing", room.id);
   }
 
   private pushRoom(room: IRoom) {
