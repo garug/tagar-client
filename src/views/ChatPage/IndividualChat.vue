@@ -12,7 +12,7 @@
     </div>
     <form @submit.prevent="sendMessage" class="main-bar">
       <div class="main-typing" v-if="room.userTyping">
-        <i>Stranger is typing ...</i>
+        <p>Stranger is typing ...</p>
       </div>
       <button
         type="button"
@@ -127,20 +127,18 @@ export default class IndividualChat extends Vue {
 
 <style lang="scss" scoped>
 .container-chat {
-  min-height: 98vh;
+  min-height: 98%;
   width: 96vw;
   max-width: 840px;
   background: $title-color;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  display: grid;
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr;
   border-radius: 3px;
 }
 
 @media (min-width: $tablet) {
   .container-chat {
-    height: 90vh;
-    min-height: 90vh;
     width: 75vw;
   }
 }
@@ -150,6 +148,7 @@ export default class IndividualChat extends Vue {
   width: 100%;
   justify-content: space-between;
   align-items: stretch;
+  flex-wrap: wrap;
   padding: 0 $mobile-spacing;
   margin-bottom: $mobile-spacing;
 }
@@ -241,7 +240,7 @@ export default class IndividualChat extends Vue {
   width: 100%;
   text-align: center;
   color: gray;
-  font-size: 11px;
+  font-size: 12px;
   margin-bottom: $default-spacing / 2;
 }
 </style>
