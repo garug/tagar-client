@@ -10,10 +10,10 @@
         <p>{{ msg.body }}</p>
       </div>
     </div>
-    <div class="main-typing" v-if="room.userTyping">
-      <i>{{ room.userTyping }} is typing ...</i>
-    </div>
     <form @submit.prevent="sendMessage" class="main-bar">
+      <div class="main-typing" v-if="room.userTyping">
+        <i>Stranger is typing ...</i>
+      </div>
       <button
         type="button"
         v-if="!isExiting && !isDisconnected"
@@ -241,6 +241,7 @@ export default class IndividualChat extends Vue {
   width: 100%;
   text-align: center;
   color: gray;
-  font-size: 10px;
+  font-size: 11px;
+  margin-bottom: $default-spacing / 2;
 }
 </style>

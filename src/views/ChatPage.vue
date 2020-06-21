@@ -3,6 +3,7 @@
     <IndividualChat
       v-for="room in rooms"
       @send:message="$emit('send:message', $event)"
+      @send:typing="$emit('send:typing', $event)"
       :isLoading="isLoading"
       :key="room.id"
       :room="room"
