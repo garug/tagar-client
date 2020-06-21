@@ -12,7 +12,7 @@ $mobile-spacing: 5px;
   box-sizing: border-box;
 }
 
-html {
+html, body {
   height: 100%;
 }
 
@@ -28,10 +28,11 @@ html {
 }
 
 .centered-content {
+  background-color: #2f2e2c;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-wrap: wrap;
-  height: 100vh;
+  height: 100%;
   flex-direction: column;
 }

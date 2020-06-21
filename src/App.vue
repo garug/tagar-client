@@ -70,8 +70,8 @@ export default class App extends Vue {
 <style lang="scss">
 #app {
   font-family: Roboto, sans-serif;
-  background-color: #2f2e2c;
-  min-height: 100vh;
+  min-height: 100%;
   width: 100%;
+  display: contents;
 }
 </style>
