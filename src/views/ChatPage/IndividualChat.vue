@@ -10,10 +10,10 @@
         <p>{{ msg.body }}</p>
       </div>
     </div>
-    <div class="main-typing" v-if="room.userTyping">
-      <i>{{ room.userTyping }} is typing ...</i>
-    </div>
     <form @submit.prevent="sendMessage" class="main-bar">
+      <div class="main-typing" v-if="room.userTyping">
+        <i>Stranger is typing ...</i>
+      </div>
       <button
         type="button"
         v-if="!isExiting && !isDisconnected"
@@ -62,10 +62,13 @@
 </template>
 
 <script lang="ts">
-import { Vue, Prop, Watch } from "vue-property-decorator";
+import { Vue, Prop, Watch, Component } from "vue-property-decorator";
 import { IRoom, IMessage } from "../../shared/interfaces";
+
+@Component({})
 export default class IndividualChat extends Vue {
-  @Prop() readonly room!: IRoom;
+  @Prop() room!: IRoom;
+  @Prop() isLoading = false;
   text = "";
   isExiting = false;
 
@@ -79,7 +82,7 @@ export default class IndividualChat extends Vue {
   }
 
   sendMessage() {
-    this.$emit("send:message", this.room, this.text);
+    this.$emit("send:message", { room: this.room, message: this.text });
     this.isExiting = false;
     this.text = "";
   }
@@ -121,3 +124,124 @@ export default class IndividualChat extends Vue {
   }
 }
 </script>
+
+<style lang="scss" scoped>
+.container-chat {
+  min-height: 98vh;
+  width: 96vw;
+  max-width: 840px;
+  background: $title-color;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  border-radius: 3px;
+}
+
+@media (min-width: $tablet) {
+  .container-chat {
+    height: 90vh;
+    min-height: 90vh;
+    width: 75vw;
+  }
+}
+
+.main-bar {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 0 $mobile-spacing;
+  margin-bottom: $mobile-spacing;
+}
+
+@media (min-width: $tablet) {
+  .main-bar {
+    padding: 0 $default-spacing;
+    margin-bottom: $default-spacing;
+  }
+}
+
+.main-input {
+  flex-grow: 1;
+
+  input {
+    background: rgba(255, 255, 255, 0.5);
+    width: 100%;
+    height: 100%;
+    padding: 0 $mobile-spacing;
+    border: 0;
+    outline: 0;
+  }
+}
+
+@media (min-width: $tablet) {
+  .main-input {
+    input {
+      padding: 0 $default-spacing;
+    }
+  }
+}
+
+.main-messages {
+  overflow-y: auto;
+  margin: 10px;
+  margin-top: 0;
+  margin-right: 0;
+  padding-right: 10px;
+  .msg {
+    margin-bottom: 3px;
+    margin-top: 3px;
+    width: 100%;
+    overflow-x: auto;
+
+    p {
+      padding: 5px 10px;
+      display: inline-flex;
+      min-height: 35px;
+      align-items: center;
+      border-radius: 15px;
+    }
+
+    &.my-msg {
+      text-align: right;
+
+      p {
+        background: #ffeaa7;
+        text-align: left;
+      }
+    }
+
+    &.system-msg {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    &.stranger-msg {
+      p {
+        background: #dfe6e9;
+      }
+    }
+  }
+}
+
+@media (min-width: $tablet) {
+  .main-messages {
+    margin: $default-spacing;
+    margin-top: 10px;
+    padding-right: $default-spacing;
+    .msg {
+      p {
+        padding: 5px $default-spacing;
+      }
+    }
+  }
+}
+
+.main-typing {
+  width: 100%;
+  text-align: center;
+  color: gray;
+  font-size: 11px;
+  margin-bottom: $default-spacing / 2;
+}
+</style>

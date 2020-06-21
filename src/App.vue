@@ -21,17 +21,22 @@
 import { Component, Vue } from "vue-property-decorator";
 
 import { IRoom, IChatStore } from "./shared/interfaces";
-import NodeChatStore from './shared/NodeChatStore';
+import NodeChatStore from "./shared/NodeChatStore";
 
 import HomePage from "./views/HomePage.vue";
 import ChatPage from "./views/ChatPage.vue";
-import { Socket } from 'vue-socket.io-extended';
+import { Socket } from "vue-socket.io-extended";
+
+interface IIncomingMessage {
+  room: IRoom;
+  message: string;
+}
 
 @Component({
   components: {
     HomePage,
-    ChatPage
-  }
+    ChatPage,
+  },
 })
 export default class App extends Vue {
   socket: IChatStore = new NodeChatStore(this.$socket.client);
@@ -44,11 +49,11 @@ export default class App extends Vue {
     this.socket.exitRoom(room);
   }
 
-  sendChatMessage(room: IRoom, message: string) {
+  sendChatMessage({ room, message }: IIncomingMessage) {
     this.socket.sendChatMessage(room, message);
   }
 
-  sendChatTyping(room:IRoom){
+  sendChatTyping(room: IRoom) {
     this.socket.sendChatTyping(room);
   }
 
