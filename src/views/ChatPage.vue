@@ -1,6 +1,6 @@
 <template>
   <div class="centered-content">
-    <div class="container-chat">
+    <!-- <div class="container-chat">
       <div class="main-messages">
         <div
           v-for="(msg, index) in room.messages"
@@ -12,7 +12,7 @@
         </div>
       </div>
       <div class="main-typing" v-if="room.userTyping">
-          <i>{{room.userTyping}} is typing ...</i>
+        <i>{{ room.userTyping }} is typing ...</i>
       </div>
       <form @submit.prevent="sendMessage" class="main-bar">
         <button
@@ -34,7 +34,10 @@
         <button
           type="button"
           v-if="!isExiting && isDisconnected"
-          :class="['button is-primary has-text-white', { 'is-loading': isLoading }]"
+          :class="[
+            'button is-primary has-text-white',
+            { 'is-loading': isLoading },
+          ]"
           @click="$emit('new')"
         >
           New Conversation
@@ -56,7 +59,8 @@
           Send
         </button>
       </form>
-    </div>
+    </div> -->
+    <IndividualChat v-for="room in rooms" :key="room.id" :room="room" />
   </div>
 </template>
 
@@ -64,66 +68,14 @@
 import { Component, Vue, Prop, Watch } from "vue-property-decorator";
 
 import { IRoom, IMessage } from "../shared/interfaces";
+import IndividualChat from "./ChatPage/IndividualChat.vue";
 
-@Component({})
+@Component({
+  components: { IndividualChat },
+})
 export default class ChatPage extends Vue {
   @Prop() rooms!: Array<IRoom>;
   @Prop() isLoading = false;
-  text = "";
-  isExiting = false;
-
-  sendMessage() {
-    this.$emit("send:message", this.room, this.text);
-    this.isExiting = false;
-    this.text = "";
-  }
-
-  sendStatusTyping(){
-    this.$emit("send:typing", this.room);
-  }
-
-  handleExit() {
-    this.isExiting = true;
-  }
-
-  exit() {
-    this.$emit("exit", this.room);
-    this.isExiting = false;
-  }
-
-  get room() {
-    return this.rooms[0];
-  }
-
-  get isDisconnected() {
-    return !this.room.active;
-  }
-
-  classUser(msg: IMessage): string {
-    switch (msg.user) {
-      case "me":
-        return "my-msg";
-      case "system":
-        return "system-msg";
-      default:
-        return "stranger-msg";
-    }
-  }
-
-  @Watch("room")
-  onRoomChange(newRoom: IRoom, oldRoom: IRoom) {
-    if (newRoom.id !== oldRoom.id) {
-      this.isExiting = false;
-    }
-  }
-
-  @Watch("room.userTyping")
-  onUserTyping(newState: string, oldState: string ) {
-    if(newState != oldState){
-      this.room.userTyping = newState;
-      setTimeout(()=> {this.room.userTyping = ""}, 2000);
-    }
-  }
 }
 </script>
 
