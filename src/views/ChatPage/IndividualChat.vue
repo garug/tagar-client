@@ -52,7 +52,7 @@
       </div>
       <button
         type="submit"
-        :disabled="isDisconnected"
+        :disabled="isTextEmpty || isDisconnected"
         class="button is-primary has-text-white is-hidden-mobile"
       >
         Send
@@ -82,13 +82,19 @@ export default class IndividualChat extends Vue {
   }
 
   sendMessage() {
-    this.$emit("send:message", { room: this.room, message: this.text });
-    this.isExiting = false;
-    this.text = "";
+    if(this.text) {
+      this.$emit("send:message", { room: this.room, message: this.text });
+      this.isExiting = false;
+      this.text = "";
+    }
   }
 
   get isDisconnected() {
     return !this.room.active;
+  }
+  
+  get isTextEmpty(){
+    return !this.text;
   }
 
   classUser(msg: IMessage): string {
