@@ -7,9 +7,9 @@
     "build": "vue-cli-service build"
   },
   "dependencies": {
-    "@types/sockjs-client": "^1.1.1",
     "socket.io-client": "^2.3.0",
     "sockjs-client": "^1.4.0",
+    "uuid": "^8.1.0",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
     "vue-property-decorator": "^8.4.2",
@@ -23,6 +23,8 @@
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
     "typescript": "~3.9.3",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "@types/sockjs-client": "^1.1.1",
+    "@types/uuid": "^8.0.0"
   }
 }

@@ -133,20 +133,13 @@ export default class IndividualChat extends Vue {
 
 <style lang="scss" scoped>
 .container-chat {
-  min-height: 98%;
-  width: 96vw;
-  max-width: 840px;
-  background: $title-color;
+  height: 100%;
+  width: 100%;
   display: grid;
-  grid-template-rows: 1fr;
   grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  background: $title-color;
   border-radius: 3px;
-}
-
-@media (min-width: $tablet) {
-  .container-chat {
-    width: 75vw;
-  }
 }
 
 .main-bar {

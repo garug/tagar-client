@@ -4,7 +4,7 @@ import io from "socket.io-client";
 
 import App from "./App.vue";
 
-const socket = io(process.env.VUE_APP_ENV_VARIABLE || "http://localhost:8080");
+const socket = io(process.env.VUE_APP_ENV_VARIABLE || "http://192.168.1.100:8080");
 
 Vue.use(VueSocketIOExt, socket);
 

@@ -70,7 +70,7 @@ export default class App extends Vue {
 <style lang="scss">
 #app {
   font-family: Roboto, sans-serif;
-  min-height: 100%;
+  min-height: 98%;
   width: 100%;
   display: contents;
 }
