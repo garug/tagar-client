@@ -2,38 +2,36 @@
   <div class="centered-content main-page">
     <div :class="`content ${numberChat !== NumberView.ONE ? 'multiple' : ''}`">
       <div class="main-chat-views">
+        <p class="main-heading">Nº Chats:</p>
         <label class="opt">
           <input
             type="radio"
             name="number-chat"
-            @click="handleChangeChatView(NumberView.ONE)"
             :value="NumberView.ONE"
+            v-model="numberChat"
             :disabled="!validChange(NumberView.ONE)"
-            v-model="numberChat"
           />
-          <i>1</i>
+          <span>1</span>
         </label>
         <label class="opt">
           <input
             type="radio"
             name="number-chat"
-            @click="handleChangeChatView(NumberView.TWO)"
             :value="NumberView.TWO"
-            :disabled="!validChange(NumberView.TWO)"
             v-model="numberChat"
+            :disabled="!validChange(NumberView.TWO)"
           />
-          <i>2</i>
+          <span>2</span>
         </label>
         <label class="opt">
           <input
             type="radio"
             name="number-chat"
-            @click="handleChangeChatView(NumberView.FOUR)"
             :value="NumberView.FOUR"
-            :disabled="!validChange(NumberView.FOUR)"
             v-model="numberChat"
+            :disabled="!validChange(NumberView.FOUR)"
           />
-          <i>4</i>
+          <span>4</span>
         </label>
       </div>
       <IndividualChat
@@ -97,22 +95,13 @@ export default class ChatPage extends Vue {
     this.resolveTotalChats();
   }
 
-  handleChangeChatView(pretendedView: ChatView) {
-    if (this.validChange(pretendedView)) {
-      this.numberChat = pretendedView;
-    } else {
-      this.warningChat = true;
-      this.$forceUpdate();
-    }
-  }
-
-  validChange(oldVal: ChatView) {
-    const isDecrementation =
-      this.resolveObjTotalChat(oldVal).totalChat <
-      this.resolveObjTotalChat(this.numberChat).totalChat;
+validChange(pretended: ChatView) {
+    const pretendedViews = this.resolveObjTotalChat(pretended).totalChat;
+    const actualViews = this.resolveObjTotalChat(this.numberChat).totalChat;
+    const isDecrementation = pretendedViews < actualViews;
     if (isDecrementation) {
       const activeChats = this.rooms.filter((room) => room.active);
-      return activeChats.length < this.objTotalChat.totalChat;
+      return activeChats.length <= pretendedViews;
     } else {
       return true;
     }
@@ -159,6 +148,8 @@ export default class ChatPage extends Vue {
     display: flex;
     flex-wrap: wrap;
     max-width: 840px;
+    margin-bottom: 0;
+
     &.multiple {
       max-width: 1440px;
     }
@@ -167,10 +158,17 @@ export default class ChatPage extends Vue {
 
 .main-chat-views {
   position: absolute;
-  top: 0;
-  right: -50px;
+  top: 20px;
+  right: -80px;
   display: flex;
   flex-direction: column;
+  text-align: center;
+
+  .main-heading {
+    margin-bottom: 0 !important;
+    color: $title-color;
+    font-size: 12px;
+  }
 }
 
 .one-view {
@@ -186,5 +184,24 @@ export default class ChatPage extends Vue {
 .four-view {
   width: 50%;
   height: 50%;
+}
+
+.opt {
+  input {
+    display: none;
+
+    &:not([disabled]) ~ span {
+      color: $title-color;
+    }
+
+    &:checked ~ span {
+      color: $primary;
+    }
+  }
+
+  span {
+    font-weight: bolder;
+    font-size: 17px;
+  }
 }
 </style>
