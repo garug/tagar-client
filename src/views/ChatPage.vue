@@ -95,7 +95,7 @@ export default class ChatPage extends Vue {
     this.resolveTotalChats();
   }
 
-  validChange(pretended: ChatView) {
+validChange(pretended: ChatView) {
     const pretendedViews = this.resolveObjTotalChat(pretended).totalChat;
     const actualViews = this.resolveObjTotalChat(this.numberChat).totalChat;
     const isDecrementation = pretendedViews < actualViews;
