@@ -1,6 +1,6 @@
 <template>
   <div class="container-chat">
-    <div class="main-messages">
+    <div class="main-messages" ref="container">
       <div
         v-for="(msg, index) in room.messages"
         :id="`${msg.user}-${index}`"
@@ -123,6 +123,16 @@ export default class IndividualChat extends Vue {
         this.room.userTyping = "";
       }, 2000);
     }
+  }
+
+  @Watch("room.messages")
+  onMessageChange() {
+    this.$nextTick(() => {
+      const {container} = this.$refs;
+      if (container instanceof Element) {
+        container.scrollTop = container.scrollHeight;
+      }
+    });
   }
 
   sendStatusTyping() {
