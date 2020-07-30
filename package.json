@@ -4,7 +4,22 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve --port 4200",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "test": "jest"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "ts",
+      "json",
+      "vue"
+    ],
+    "transform": {
+      ".*\\.(vue)$": "vue-jest",
+      "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testURL": "http://localhost/"
   },
   "dependencies": {
     "socket.io-client": "^2.3.0",
@@ -17,14 +32,19 @@
     "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
+    "@types/sockjs-client": "^1.1.1",
+    "@types/uuid": "^8.0.0",
     "@vue/cli-plugin-typescript": "~4.4.0",
     "@vue/cli-service": "~4.4.0",
+    "@vue/test-utils": "^1.0.3",
+    "babel-core": "^6.26.3",
     "bulma": "^0.9.0",
+    "jest": "^26.1.0",
     "sass": "^1.26.5",
     "sass-loader": "^8.0.2",
+    "ts-jest": "^26.1.1",
     "typescript": "~3.9.3",
-    "vue-template-compiler": "^2.6.11",
-    "@types/sockjs-client": "^1.1.1",
-    "@types/uuid": "^8.0.0"
+    "vue-jest": "^3.0.6",
+    "vue-template-compiler": "^2.6.11"
   }
 }
