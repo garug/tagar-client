@@ -1,7 +1,7 @@
 <template>
   <div class="centered-content main-page">
     <div :class="`content ${numberChat !== NumberView.ONE ? 'multiple' : ''}`">
-      <div class="main-chat-views">
+      <div class="main-chat-views" v-if="chatViewVisible">
         <p class="main-heading">Nº Chats:</p>
         <label class="opt">
           <input
@@ -124,6 +124,11 @@ validChange(pretended: ChatView) {
 
   get objTotalChat() {
     return this.resolveObjTotalChat(this.numberChat);
+  }
+
+  get chatViewVisible() {
+    const width =document.documentElement.clientWidth
+    return width >= 1024;
   }
 
   resolveObjTotalChat(chatView: ChatView) {
